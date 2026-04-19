@@ -35,7 +35,6 @@ Image → Loader → Preprocessor → Residual Extraction
 ```bash
 # 1. Clone
 git clone https://github.com/serious-engineer/Deepfake-Detector.git
-cd Deepfake-Detector/forensics_tool
 
 # 2. Install dependencies
 pip install -r requirements.txt
