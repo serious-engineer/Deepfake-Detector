@@ -49,6 +49,10 @@ test_camera_like.png
 test_ai_like.png
 *.tmp
 
+# Input images — add your images here locally, never commit them
+input/*
+!input/.gitkeep
+
 # Jupyter
 .ipynb_checkpoints/
 *.ipynb
