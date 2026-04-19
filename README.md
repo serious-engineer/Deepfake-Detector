@@ -24,9 +24,60 @@ Each feature returns a score in [0, 1] where **0 = synthetic** and **1 = camera*
 ### Pipeline
 
 ```
-Image → Loader → Preprocessor → Residual Extraction
-      → Feature Extraction → Scoring → Visualisations + HTML Report
+           ┌──────────────────────────────────────────────┐
+           │  Loader                                       │
+           │  decode · extract EXIF · estimate JPEG quality│
+           └──────────────────────┬───────────────────────┘
+                                  │
+                                  ▼
+           ┌──────────────────────────────────────────────┐
+           │  Preprocessor                                 │
+           │  resize guard · RGB + grayscale · [0,1] norm  │
+           └──────────────────────┬───────────────────────┘
+                                  │
+                                  ▼
+           ┌──────────────────────────────────────────────┐
+           │  Residual Extraction                          │
+           │  image − smooth(image) = noise layer          │
+           │  Wiener · Gaussian · Median · per-channel RGB │
+           └──────────────────────┬───────────────────────┘
+                                  │
+                    ┌─────────────┼─────────────┐
+                    ▼             ▼             ▼
+              [raw image]    [residuals]   [EXIF data]
+                    └─────────────┼─────────────┘
+                                  │
+                                  ▼
+           ┌──────────────────────────────────────────────┐
+           │  Feature Extraction  (6 signals → [0, 1])    │
+           │                                               │
+           │  EXIF completeness   ·  Spectral energy       │
+           │  Channel covariance  ·  Local variance        │
+           │  Texture sharpness   ·  Frequency anisotropy  │
+           └──────────────────────┬───────────────────────┘
+                                  │
+                                  ▼
+           ┌──────────────────────────────────────────────┐
+           │  Scoring                                      │
+           │  weighted avg → JPEG attenuation → verdict   │
+           └──────────────────────┬───────────────────────┘
+                                  │
+                                  ▼
+           ┌──────────────────────────────────────────────┐
+           │  Output                                       │
+           │  report.html + 4 visualisation PNGs           │
+           └──────────────────────────────────────────────┘
 ```
+
+**Loader** — decodes the file, reads EXIF tags, and estimates JPEG quantisation quality. Low quality (< 70) degrades forensic signals, so confidence is attenuated downstream.
+
+**Preprocessor** — caps the longest edge at `MAX_DIMENSION`, converts to float32 RGB and grayscale, normalises pixel values to [0, 1].
+
+**Residual Extraction** — subtracts a smoothed copy of the image from the original to isolate the noise layer. Three filters produce complementary residuals: Wiener (adaptive, PRNU-style), Gaussian, and Median. Per-channel Wiener residuals are computed separately for the cross-channel covariance feature.
+
+**Feature Extraction** — six independent signals, each mapped to [0, 1] (0 = synthetic, 1 = camera). They cover the metadata layer (EXIF), frequency domain (spectral energy, anisotropy), noise structure (channel covariance, local variance), and spatial domain (texture sharpness).
+
+**Scoring** — weighted average of the six feature scores. If JPEG quality < 70, the score is pulled toward 0.5 (uncertain). Final verdict: `synthetic` (< 0.38), `camera` (> 0.62), or `inconclusive`.
 
 ---
 
