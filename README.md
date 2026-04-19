@@ -126,14 +126,16 @@ Output    : forensics_output/photo_20260418_152301
 ## Project Structure
 
 ```
-forensics_tool/
+Deepfake-Detector/
 ├── main.py               # CLI entry point
 ├── config.py             # Thresholds, weights, constants
 ├── requirements.txt
 ├── README.md
 ├── PLANNER.md            # Roadmap and phase tracker
+├── .gitignore
 │
 ├── core/
+│   ├── __init__.py
 │   ├── loader.py         # Image loading + EXIF extraction
 │   ├── preprocess.py     # Normalisation, resize
 │   ├── residual.py       # Wiener / Gaussian / Median residuals
@@ -142,11 +144,21 @@ forensics_tool/
 │   └── utils.py          # linear_map, safe_corrcoef
 │
 ├── output/
+│   ├── __init__.py
 │   ├── visualization.py  # matplotlib figure generation
 │   └── report.py         # Self-contained HTML report
 │
-└── tests/
-    └── test_basic.py     # 12 pytest tests
+├── tests/
+│   ├── __init__.py
+│   └── test_basic.py     # 12 pytest tests
+│
+└── input/                # gitignored — place local images here
+    └── Dataset/
+        ├── Train/
+        │   └── Fake/
+        └── Test/
+            ├── Fake/
+            └── Real/
 ```
 
 ---

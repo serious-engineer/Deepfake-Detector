@@ -7,6 +7,46 @@
 
 ---
 
+## Folder Structure
+
+```
+Deepfake-Detector/
+├── main.py               # CLI entry point
+├── config.py             # Thresholds, weights, constants
+├── requirements.txt
+├── README.md
+├── PLANNER.md
+├── .gitignore
+│
+├── core/
+│   ├── __init__.py
+│   ├── loader.py         # Image loading + EXIF extraction
+│   ├── preprocess.py     # Normalisation, resize
+│   ├── residual.py       # Wiener / Gaussian / Median residuals
+│   ├── features.py       # 6 forensic feature extractors
+│   ├── scoring.py        # Weighted aggregation, label assignment
+│   └── utils.py          # linear_map, safe_corrcoef
+│
+├── output/
+│   ├── __init__.py
+│   ├── visualization.py  # matplotlib figure generation
+│   └── report.py         # Self-contained HTML report
+│
+├── tests/
+│   ├── __init__.py
+│   └── test_basic.py     # 12 pytest tests
+│
+└── input/                # gitignored — place local images here
+    └── Dataset/
+        ├── Train/
+        │   └── Fake/
+        └── Test/
+            ├── Fake/
+            └── Real/
+```
+
+---
+
 ## Phase 1 — MVP (Complete)
 
 ### Core Pipeline
