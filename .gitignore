@@ -47,6 +47,7 @@ Thumbs.db
 
 # Tool outputs — never commit forensic results or test images
 forensics_output/
+Project_Report_Image_Noise_Forensics.pdf
 test_camera_like.png
 test_ai_like.png
 *.tmp
